@@ -1,0 +1,1253 @@
+/* ==========================================================================
+   SISTEMA DE DISEÑO PREMIUM - ASISTENCIQR (CSS VANILLA)
+   ========================================================================== */
+
+/* 1. Variables de Diseño (Tokens) */
+:root {
+    /* Paleta de Colores de Alta Gama (HSL para armonía cromática) */
+    --bg-base: #090d16;
+    --bg-surface: #0f172a;
+    --bg-surface-glass: rgba(15, 23, 42, 0.65);
+    --border-glass: rgba(255, 255, 255, 0.08);
+    --border-focus: #6366f1;
+    
+    --primary: #6366f1; /* Índigo */
+    --primary-glow: rgba(99, 102, 241, 0.3);
+    --primary-hover: #4f46e5;
+    
+    --secondary: #06b6d4; /* Cian */
+    --secondary-glow: rgba(6, 182, 212, 0.2);
+    
+    --success: #10b981; /* Esmeralda */
+    --success-bg: rgba(16, 185, 129, 0.1);
+    --success-border: rgba(16, 185, 129, 0.25);
+    
+    --error: #ef4444; /* Rojo Coral */
+    --error-bg: rgba(239, 68, 68, 0.1);
+    --error-border: rgba(239, 68, 68, 0.25);
+    
+    --text-primary: #f8fafc;
+    --text-muted: #94a3b8;
+    --text-dark: #1e293b;
+    
+    /* Sombras y Filtros Modernos */
+    --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 12px 20px -8px rgba(0, 0, 0, 0.7);
+    --shadow-lg: 0 20px 40px -12px rgba(0, 0, 0, 0.85);
+    --shadow-primary: 0 8px 30px rgba(99, 102, 241, 0.25);
+    --shadow-success-glow: 0 0 25px rgba(16, 185, 129, 0.35);
+    --shadow-error-glow: 0 0 25px rgba(239, 68, 68, 0.35);
+    
+    --blur-glass: blur(16px);
+    
+    /* Tipografía y Bordes */
+    --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-round: 9999px;
+    
+    /* Transiciones */
+    --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-smooth: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 2. Reseteo y Estilos Base */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.6;
+    overflow-x: hidden;
+    min-height: 100vh;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.04) 0%, transparent 40%);
+    background-attachment: fixed;
+}
+
+/* Ocultar elementos */
+.hidden {
+    display: none !important;
+}
+
+/* Estilo del Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-round);
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary);
+}
+
+/* 3. Contenedor de la Aplicación */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+}
+
+/* 4. Header de la Aplicación */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.header-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow-primary);
+    color: white;
+}
+
+.logo-icon i {
+    width: 24px;
+    height: 24px;
+}
+
+.logo-text h1 {
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.025em;
+}
+
+.logo-text h1 span {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.logo-text p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* Estado de Conexión */
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: var(--bg-surface-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-round);
+    backdrop-filter: var(--blur-glass);
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transition: var(--transition-fast);
+}
+
+.status-indicator.online {
+    background-color: var(--success);
+    box-shadow: 0 0 10px var(--success);
+}
+
+.status-indicator.offline {
+    background-color: var(--error);
+    box-shadow: 0 0 10px var(--error);
+}
+
+/* 5. Contenido Principal */
+.app-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+/* 6. Banner de Feedback (Lectura Exitosa / Error) */
+.feedback-banner {
+    animation: slideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.feedback-card {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem 2rem;
+    border-radius: var(--radius-md);
+    background: var(--bg-surface-glass);
+    backdrop-filter: var(--blur-glass);
+    border: 1px solid var(--border-glass);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Efectos de estado de la tarjeta de feedback */
+.feedback-card.success-state {
+    border-color: var(--success-border);
+    background: linear-gradient(135deg, var(--bg-surface-glass), rgba(16, 185, 129, 0.08));
+    box-shadow: var(--shadow-lg), var(--shadow-success-glow);
+}
+
+.feedback-card.error-state {
+    border-color: var(--error-border);
+    background: linear-gradient(135deg, var(--bg-surface-glass), rgba(239, 68, 68, 0.08));
+    box-shadow: var(--shadow-lg), var(--shadow-error-glow);
+}
+
+.feedback-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.success-state .feedback-icon {
+    background-color: var(--success-bg);
+    color: var(--success);
+}
+
+.error-state .feedback-icon {
+    background-color: var(--error-bg);
+    color: var(--error);
+}
+
+.feedback-icon i {
+    width: 28px;
+    height: 28px;
+}
+
+.feedback-details {
+    flex: 1;
+}
+
+.feedback-status-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.success-state .feedback-status-title {
+    color: var(--success);
+}
+
+.error-state .feedback-status-title {
+    color: var(--error);
+}
+
+.assistant-name {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.15rem;
+    letter-spacing: -0.01em;
+}
+
+.assistant-affiliation {
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+
+.feedback-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition-fast);
+}
+
+.feedback-close-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+}
+
+/* 7. Navegación por Pestañas (Tabs Navigation) */
+.tabs-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.tabs-navigation {
+    display: flex;
+    gap: 0.5rem;
+    padding: 0.4rem;
+    background: var(--bg-surface-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    backdrop-filter: var(--blur-glass);
+    align-self: flex-start;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    white-space: nowrap;
+    transition: var(--transition-fast);
+}
+
+.tab-btn:hover {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.tab-btn.active {
+    color: var(--text-primary);
+    background: var(--primary);
+    box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.tab-btn i {
+    width: 18px;
+    height: 18px;
+}
+
+.badge {
+    background-color: var(--error);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-round);
+    min-width: 18px;
+    text-align: center;
+}
+
+/* 8. Paneles de Pestañas */
+.tab-panel {
+    display: none;
+    animation: fadeIn 0.4s ease-out;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================================================
+   DISEÑO DEL ESCÁNER (PESTAÑA 1)
+   ========================================================================== */
+.scanner-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 992px) {
+    .scanner-layout {
+        grid-template-columns: 1.6fr 1fr;
+    }
+}
+
+.scanner-card {
+    background: var(--bg-surface-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    backdrop-filter: var(--blur-glass);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.scanner-header-info h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.scanner-header-info p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+/* Envoltura del Visor de Cámara */
+.scanner-viewport-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    background-color: #020617;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.scanner-viewport {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover;
+}
+
+/* Ocultar elementos nativos de la librería html5-qrcode para personalizar el diseño */
+#reader button, #reader select {
+    display: none !important;
+}
+#reader canvas {
+    display: none !important;
+}
+#reader__scan_region, #reader video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+}
+#reader {
+    border: none !important;
+    background-color: transparent !important;
+}
+#reader__scan_region {
+    background-color: transparent !important;
+}
+
+/* Capa Decorativa / Laser UI */
+.scanner-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    background: rgba(2, 6, 23, 0.4);
+    transition: var(--transition-smooth);
+}
+
+/* Estado de cámara apagada / esperando */
+.scanner-viewport-wrapper.camera-on .scanner-overlay {
+    background: transparent;
+}
+
+.scanner-viewport-wrapper.camera-on .scanner-placeholder-text {
+    display: none !important;
+}
+
+.scanner-placeholder-text {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-align: center;
+    padding: 1rem;
+    transition: var(--transition-smooth);
+}
+
+.spinning-icon {
+    width: 48px;
+    height: 48px;
+    color: var(--primary);
+    animation: spin 3s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Marco del visor QR */
+.scanner-frame {
+    width: 65%;
+    aspect-ratio: 1 / 1;
+    max-width: 380px;
+    max-height: 380px;
+    position: relative;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 0 0 1000px rgba(2, 6, 23, 0.7); /* Máscara externa */
+    opacity: 0;
+    transition: var(--transition-smooth);
+}
+
+.scanner-viewport-wrapper.camera-on .scanner-frame {
+    opacity: 1;
+}
+
+/* Esquinas iluminadas al estilo retro-cyberpunk */
+.corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--secondary);
+}
+
+.top-left {
+    top: -3px;
+    left: -3px;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: var(--radius-sm);
+}
+
+.top-right {
+    top: -3px;
+    right: -3px;
+    border-left: none;
+    border-bottom: none;
+    border-top-right-radius: var(--radius-sm);
+}
+
+.bottom-left {
+    bottom: -3px;
+    left: -3px;
+    border-right: none;
+    border-top: none;
+    border-bottom-left-radius: var(--radius-sm);
+}
+
+.bottom-right {
+    bottom: -3px;
+    right: -3px;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: var(--radius-sm);
+}
+
+/* Línea Láser de Escaneo */
+.laser-line {
+    position: absolute;
+    top: 0;
+    left: 2px;
+    width: calc(100% - 4px);
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--secondary), transparent);
+    box-shadow: 0 0 12px var(--secondary);
+    animation: laserScan 2.5s ease-in-out infinite;
+    opacity: 0;
+}
+
+.scanner-viewport-wrapper.camera-on .laser-line {
+    opacity: 1;
+}
+
+@keyframes laserScan {
+    0%, 100% { top: 4%; }
+    50% { top: 96%; }
+}
+
+/* Controles del Escáner */
+.scanner-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.control-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.form-select {
+    background-color: rgba(2, 6, 23, 0.4);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    padding: 0.75rem 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    width: 100%;
+    outline: none;
+    cursor: pointer;
+    transition: var(--transition-fast);
+}
+
+.form-select:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+.btn-group {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+/* Botones Premium */
+.btn {
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.8rem 1.5rem;
+    border-radius: var(--radius-sm);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: var(--transition-fast);
+    outline: none;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    color: white;
+    box-shadow: 0 4px 14px var(--primary-glow);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background-color: rgba(255, 255, 255, 0.06);
+    border: 1px solid var(--border-glass);
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon-only {
+    padding: 0.8rem;
+    aspect-ratio: 1 / 1;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.btn-danger-outline {
+    background: transparent;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: var(--error);
+}
+
+.btn-danger-outline:hover {
+    background-color: rgba(239, 68, 68, 0.1);
+}
+
+/* Barra Lateral de Registro Reciente */
+.recent-scan-sidebar {
+    background: var(--bg-surface-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    backdrop-filter: var(--blur-glass);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.sidebar-header h4 {
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.sidebar-header i {
+    color: var(--primary);
+    width: 20px;
+    height: 20px;
+}
+
+.sidebar-content {
+    flex: 1;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.empty-recent-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--text-muted);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.empty-recent-state i {
+    width: 40px;
+    height: 40px;
+    opacity: 0.4;
+}
+
+/* Estilo para el contenido activo del registro reciente */
+.recent-scanned-card {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.recent-scanned-card .card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.recent-scanned-card .sync-badge {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-round);
+    font-weight: 600;
+}
+
+.sync-badge.synced {
+    background-color: var(--success-bg);
+    color: var(--success);
+    border: 1px solid var(--success-border);
+}
+
+.sync-badge.pending {
+    background-color: var(--error-bg);
+    color: var(--error);
+    border: 1px solid var(--error-border);
+}
+
+.recent-scanned-card .assistant-info-block {
+    background: rgba(2, 6, 23, 0.4);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 1.25rem;
+}
+
+.recent-scanned-card .assistant-info-block .label-tag {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.recent-scanned-card .assistant-info-block h5 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+}
+
+.recent-scanned-card .assistant-info-block p {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+}
+
+.recent-scanned-card .time-stamp {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+/* ==========================================================================
+   REGISTRO MANUAL (PESTAÑA 2)
+   ========================================================================== */
+.max-width-md {
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-card {
+    background: var(--bg-surface-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    backdrop-filter: var(--blur-glass);
+    box-shadow: var(--shadow-md);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-card-header {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.form-header-icon {
+    width: 32px;
+    height: 32px;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.form-card-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.form-card-header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 18px;
+    height: 18px;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.form-input {
+    background-color: rgba(2, 6, 23, 0.4);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    padding: 0.8rem 1rem 0.8rem 2.8rem;
+    font-family: var(--font-sans);
+    font-size: 0.95rem;
+    width: 100%;
+    outline: none;
+    transition: var(--transition-fast);
+}
+
+.form-input:focus {
+    border-color: var(--border-focus);
+    box-shadow: 0 0 0 2px var(--primary-glow);
+}
+
+.form-input:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.input-help-text {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   HISTORIAL (PESTAÑA 3)
+   ========================================================================== */
+.history-layout {
+    background: var(--bg-surface-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    backdrop-filter: var(--blur-glass);
+    box-shadow: var(--shadow-md);
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.history-controls-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+@media (min-width: 768px) {
+    .history-controls-header {
+        flex-direction: row;
+        align-items: center;
+    }
+}
+
+.history-controls-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.history-controls-header p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+
+.history-actions {
+    display: flex;
+    gap: 0.75rem;
+}
+
+/* Contenedor de la Tabla (Habilitar Scroll Lateral) */
+.table-container {
+    width: 100%;
+    overflow-x: auto;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-glass);
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+    font-size: 0.95rem;
+}
+
+.history-table th {
+    background-color: rgba(2, 6, 23, 0.4);
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-glass);
+}
+
+.history-table td {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-glass);
+    color: var(--text-primary);
+}
+
+.history-table tbody tr {
+    transition: var(--transition-fast);
+}
+
+.history-table tbody tr:hover {
+    background-color: rgba(255, 255, 255, 0.02);
+}
+
+.empty-table-state {
+    text-align: center !important;
+    padding: 4rem 1.5rem !important;
+    color: var(--text-muted);
+}
+
+.empty-table-state i {
+    width: 48px;
+    height: 48px;
+    opacity: 0.3;
+    margin-bottom: 0.75rem;
+}
+
+/* Badges específicas de la tabla */
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-round);
+}
+
+.status-badge.sync-ok {
+    background-color: var(--success-bg);
+    color: var(--success);
+    border: 1px solid var(--success-border);
+}
+
+.status-badge.sync-pending {
+    background-color: var(--error-bg);
+    color: var(--error);
+    border: 1px solid var(--error-border);
+}
+
+.method-badge {
+    display: inline-flex;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--radius-sm);
+}
+
+.method-badge.qr {
+    background-color: var(--secondary-glow);
+    color: var(--secondary);
+    border: 1px solid rgba(6, 182, 212, 0.2);
+}
+
+.method-badge.manual {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    border: 1px solid var(--border-glass);
+}
+
+/* ==========================================================================
+   CONFIGURACIÓN (PESTAÑA 4)
+   ========================================================================== */
+.settings-layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 992px) {
+    .settings-layout.grid-2 {
+        grid-template-columns: 1.2fr 1fr;
+    }
+}
+
+/* Controles de Configuración Específicos */
+.toggle-control {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: rgba(2, 6, 23, 0.3);
+    border: 1px solid var(--border-glass);
+    padding: 1.25rem;
+    border-radius: var(--radius-md);
+}
+
+.toggle-title {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.15rem;
+}
+
+.toggle-desc {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* Switch Toggle Animado */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 28px;
+    flex-shrink: 0;
+}
+
+.switch input { 
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .4s;
+    border: 1px solid var(--border-glass);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-primary);
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input:checked + .slider {
+    background-color: var(--primary);
+    border-color: var(--primary-hover);
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px var(--primary);
+}
+
+input:checked + .slider:before {
+    transform: translateX(22px);
+}
+
+.slider.round {
+    border-radius: var(--radius-round);
+}
+
+.slider.round:before {
+    border-radius: 50%;
+}
+
+/* Tarjeta Informativa de Guía */
+.info-card {
+    background: var(--bg-surface-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 2.5rem;
+    backdrop-filter: var(--blur-glass);
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.info-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--secondary);
+}
+
+.info-card-header h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.info-card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+    font-size: 0.95rem;
+}
+
+.steps-list {
+    padding-left: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.steps-list li {
+    color: var(--text-primary);
+}
+
+.steps-list li code {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+}
+
+.warning-text-note {
+    background-color: rgba(6, 182, 212, 0.05);
+    border: 1px solid rgba(6, 182, 212, 0.15);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.warning-text-note i {
+    color: var(--secondary);
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.app-footer {
+    padding: 3rem 0;
+    border-top: 1px solid var(--border-glass);
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+/* ==========================================================================
+   ANIMENTOS ADICIONALES Y EFECTOS
+   ========================================================================== */
+.spinning-icon {
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    100% { transform: rotate(360deg); }
+}

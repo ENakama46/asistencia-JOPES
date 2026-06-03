@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de QR - AsistenciQR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, hsl(210,30%,10%), hsl(210,30%,20%));
+            color: #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        h1 { text-align:center; margin-bottom:1rem; }
+        input, button {
+            width:100%;
+            padding:0.8rem 1rem;
+            margin-top:0.5rem;
+            border:none;
+            border-radius:8px;
+            font-size:1rem;
+        }
+        input { background:rgba(255,255,255,0.12); color:#fff; }
+        button { background:#0ea5e9; color:#fff; cursor:pointer; transition:background 0.2s; }
+        button:hover { background:#0284c7; }
+        #qrCode { margin-top:1.5rem; display:flex; justify-content:center; }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Generador de QR</h1>
+        <p>Introduce los datos que deseas codificar (p. ej., nombre y afiliación).</p>
+        <input type="text" id="qrData" placeholder="Datos del asistente"/>
+        <button id="generateBtn">Generar QR</button>
+        <div id="qrCode"></div>
+    </div>
+    <script>
+        const btn = document.getElementById('generateBtn');
+        const qrDiv = document.getElementById('qrCode');
+        btn.addEventListener('click', () => {
+            const data = document.getElementById('qrData').value.trim();
+            if (!data) {
+                alert('Introduce algún texto para generar el QR.');
+                return;
+            }
+            qrDiv.innerHTML = '';
+            new QRCode(qrDiv, {
+                text: data,
+                width: 256,
+                height: 256,
+                colorDark: '#ffffff',
+                colorLight: '#00000000',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        });
+    </script>
+</body>
+</html>

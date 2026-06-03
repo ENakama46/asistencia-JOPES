@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsistenciQR - Control de Asistencia para Congresos Científicos</title>
+    
+    <!-- Metas de SEO y Accesibilidad -->
+    <meta name="description" content="Aplicación web premium para el control de asistencia a congresos científicos mediante escaneo de códigos QR y sincronización directa con Google Sheets.">
+    <meta name="theme-color" content="#0f172a">
+    
+    <!-- Google Fonts - Outfit y JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons para iconos modernos -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- Html5Qrcode Library (Lectura QR rápida desde CDN) -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js" type="text/javascript"></script>
+    
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <div class="app-container">
+        
+        <!-- HEADER PRINCIPAL -->
+        <header class="app-header">
+            <div class="header-logo">
+                <div class="logo-icon">
+                    <i data-lucide="qr-code"></i>
+                </div>
+                <div class="logo-text">
+                    <h1>Asistenci<span>QR</span></h1>
+                    <p>Congreso Científico Internacional</p>
+                </div>
+            </div>
+            
+            <!-- Barra de estado de conexión -->
+            <div class="connection-status" id="connectionStatus" title="Estado de la conexión">
+                <span class="status-indicator online"></span>
+                <span class="status-text">En línea</span>
+            </div>
+        </header>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="app-main">
+            
+            <!-- BANNER DE FEEDBACK VISUAL RÁPIDO (Se activa al escanear) -->
+            <section class="feedback-banner hidden" id="feedbackBanner">
+                <div class="feedback-card" id="feedbackCard">
+                    <div class="feedback-icon" id="feedbackIcon">
+                        <i data-lucide="check-circle-2"></i>
+                    </div>
+                    <div class="feedback-details">
+                        <span class="feedback-status-title" id="feedbackStatusTitle">¡Registro Exitoso!</span>
+                        <h2 class="assistant-name" id="feedName">Cargando Nombre...</h2>
+                        <p class="assistant-affiliation" id="feedAffiliation">Cargando Afiliación...</p>
+                    </div>
+                    <button class="feedback-close-btn" id="closeFeedbackBtn" title="Cerrar aviso">
+                        <i data-lucide="x"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- CONTENEDOR DE PESTAÑAS (TABS) -->
+            <section class="tabs-container">
+                <div class="tabs-navigation">
+                    <button class="tab-btn active" data-tab="scan" id="tabBtnScan">
+                        <i data-lucide="scan"></i>
+                        <span>Escanear QR</span>
+                    </button>
+                    <button class="tab-btn" data-tab="manual" id="tabBtnManual">
+                        <i data-lucide="keyboard"></i>
+                        <span>Registro Manual</span>
+                    </button>
+                    <button class="tab-btn" data-tab="history" id="tabBtnHistory">
+                        <i data-lucide="history"></i>
+                        <span>Historial</span>
+                        <span class="badge hidden" id="offlineBadge">0</span>
+                    </button>
+                    <button class="tab-btn" data-tab="settings" id="tabBtnSettings">
+                        <i data-lucide="settings"></i>
+                        <span>Configuración</span>
+                    </button>
+                </div>
+
+                <!-- CONTENIDOS DE LAS PESTAÑAS -->
+                <div class="tabs-content">
+                    
+                    <!-- 1. PESTAÑA: ESCANEAR QR -->
+                    <div class="tab-panel active" id="panel-scan">
+                        <div class="scanner-layout">
+                            <div class="scanner-card">
+                                <div class="scanner-header-info">
+                                    <h3>Escáner de Cámara Activo</h3>
+                                    <p>Enfoque el código QR de la credencial del asistente en el recuadro.</p>
+                                </div>
+                                
+                                <div class="scanner-viewport-wrapper">
+                                    <!-- Visor de la cámara -->
+                                    <div id="reader" class="scanner-viewport"></div>
+                                    
+                                    <!-- Capa decorativa / Máscara del escáner -->
+                                    <div class="scanner-overlay" id="scannerOverlay">
+                                        <div class="scanner-frame">
+                                            <span class="corner top-left"></span>
+                                            <span class="corner top-right"></span>
+                                            <span class="corner bottom-left"></span>
+                                            <span class="corner bottom-right"></span>
+                                            <div class="laser-line"></div>
+                                        </div>
+                                        <div class="scanner-placeholder-text">
+                                            <i data-lucide="aperture" class="spinning-icon"></i>
+                                            <span>Esperando acceso a la cámara...</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="scanner-controls">
+                                    <div class="control-group hidden">
+                                        <label for="cameraSelect"><i data-lucide="camera"></i> Seleccionar Cámara:</label>
+                                        <select id="cameraSelect" class="form-select">
+                                            <option value="">Cargando cámaras...</option>
+                                        </select>
+                                    </div>
+                                    <div class="btn-group">
+                                        <button class="btn btn-primary" id="btnToggleCamera">
+                                            <i data-lucide="power"></i>
+                                            <span>Iniciar Cámara</span>
+                                        </button>
+                                        <button class="btn btn-success" id="btnSingleScan"><i data-lucide="scan"></i><span>Escanear una vez</span></button>
+                                        <button class="btn btn-secondary btn-icon-only" id="btnToggleAudio" title="Silenciar / Activar Sonidos">
+                                            <i data-lucide="volume-2" id="audioIcon"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- TARJETA DEL ÚLTIMO REGISTRO EN PANEL LATERAL (Pantallas grandes) -->
+                            <div class="recent-scan-sidebar">
+                                <div class="sidebar-header">
+                                    <i data-lucide="user-check"></i>
+                                    <h4>Último Asistente Registrado</h4>
+                                </div>
+                                <div class="sidebar-content" id="sidebarRecentContent">
+                                    <div class="empty-recent-state">
+                                        <i data-lucide="qr-code"></i>
+                                        <p>No se ha escaneado ningún QR en esta sesión.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. PESTAÑA: REGISTRO MANUAL -->
+                    <div class="tab-panel" id="panel-manual">
+                        <div class="form-card max-width-md">
+                            <div class="form-card-header">
+                                <i data-lucide="user-plus" class="form-header-icon"></i>
+                                <div>
+                                    <h3>Registro Manual de Asistencia</h3>
+                                    <p>Utilice este formulario si la credencial del participante está dañada o si la cámara del dispositivo presenta inconvenientes.</p>
+                                </div>
+                            </div>
+                            
+                            <form id="manualRegisterForm" autocomplete="off">
+                                <div class="form-group">
+                                    <label for="manualName">Nombre Completo del Asistente *</label>
+                                    <div class="input-wrapper">
+                                        <i data-lucide="user" class="input-icon"></i>
+                                        <input type="text" id="manualName" placeholder="Ej. Dr. Mateo Silva" required class="form-input">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="manualAffiliation">Afiliación / Institución *</label>
+                                    <div class="input-wrapper">
+                                        <i data-lucide="building" class="input-icon"></i>
+                                        <input type="text" id="manualAffiliation" placeholder="Ej. Universidad de Nanotecnología" required class="form-input">
+                                    </div>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i data-lucide="save"></i>
+                                    <span>Registrar Asistencia</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- 3. PESTAÑA: HISTORIAL -->
+                    <div class="tab-panel" id="panel-history">
+                        <div class="history-layout">
+                            <div class="history-controls-header">
+                                <div>
+                                    <h3>Historial de Registros en esta Sesión</h3>
+                                    <p>Lista de participantes registrados por este dispositivo en la sesión actual.</p>
+                                </div>
+                                <div class="history-actions">
+                                    <button class="btn btn-secondary" id="btnSyncOffline" title="Sincronizar datos pendientes con Google Sheets">
+                                        <i data-lucide="refresh-cw"></i>
+                                        <span>Sincronizar Pendientes</span>
+                                    </button>
+                                    <button class="btn btn-danger-outline btn-icon-only" id="btnClearHistory" title="Borrar historial local">
+                                        <i data-lucide="trash-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Tabla de Registros -->
+                            <div class="table-container">
+                                <table class="history-table" id="historyTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Hora</th>
+                                            <th>Nombre Completo</th>
+                                            <th>Afiliación / Institución</th>
+                                            <th>Tipo Registro</th>
+                                            <th>Estado Sincronización</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="historyTableBody">
+                                        <tr>
+                                            <td colspan="5" class="empty-table-state">
+                                                <i data-lucide="inbox"></i>
+                                                <p>Aún no hay asistencias registradas.</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 4. PESTAÑA: CONFIGURACIÓN -->
+                    <div class="tab-panel" id="panel-settings">
+                        <div class="settings-layout grid-2">
+                            
+                            <!-- Formulario de Configuración de Conexiones -->
+                            <div class="form-card">
+                                <div class="form-card-header">
+                                    <i data-lucide="settings-2" class="form-header-icon"></i>
+                                    <div>
+                                        <h3>Configuración del Sistema</h3>
+                                        <p>Defina las conexiones y modos de funcionamiento.</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <div class="toggle-control" style="display:none;">
+                                        <div>
+                                            <span class="toggle-title">Modo Simulador</span>
+                                            <p class="toggle-desc">Permite probar la aplicación con datos simulados sin conectarse a Google Sheets. Emite los sonidos de éxito/error y guarda el historial local.</p>
+                                        </div>
+                                        <label class="switch">
+                                            <input type="checkbox" id="settingSimulatorMode">
+                                            <span class="slider round"></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group" id="googleSheetsUrlGroup">
+                                    <label for="settingSheetsUrl">URL de Google Apps Script (Web App URL)</label>
+                                    <div class="input-wrapper">
+                                        <i data-lucide="link" class="input-icon"></i>
+                                        <input type="url" id="settingSheetsUrl" placeholder="https://script.google.com/macros/s/.../exec" class="form-input" disabled>
+                                    </div>
+                                    <span class="input-help-text">Obtén esta URL al implementar el código en tu hoja de Google Sheets.</span>
+                                </div>
+                                
+                                <div class="btn-group">
+                                    <button class="btn btn-primary" id="btnSaveSettings">
+                                        <i data-lucide="check"></i>
+                                        <span>Guardar Configuración</span>
+                                    </button>
+                                    <button class="btn btn-warning" id="btnResetSimulator">
+                                        <i data-lucide="refresh-cw"></i>
+                                        <span>Restablecer Simulador</span>
+                                    </button>
+                                    <button class="btn btn-secondary" id="btnTestSheetsConnection" disabled>
+                                        <i data-lucide="database"></i>
+                                        <span>Probar Conexión</span>
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Tarjeta Informativa de Integración -->
+                            <div class="info-card">
+                                <div class="info-card-header">
+                                    <i data-lucide="help-circle"></i>
+                                    <h3>Guía Rápida de Conexión</h3>
+                                </div>
+                                <div class="info-card-body">
+                                    <p>Para registrar las asistencias en tu propia hoja de cálculo de Google Sheets:</p>
+                                    <ol class="steps-list">
+                                        <li>Crea una nueva hoja de cálculo en tu Google Drive.</li>
+                                        <li>Nombra las columnas de la primera fila como: 
+                                            <code>Fecha</code>, <code>Nombre</code>, <code>Afiliacion</code>, <code>Metodo</code> y <code>Recepcionista</code>.
+                                        </li>
+                                        <li>Ve a <strong>Extensiones -> Apps Script</strong>.</li>
+                                        <li>Copia y pega el código del archivo <code>google_apps_script.js</code> que he creado en este proyecto.</li>
+                                        <li>Haz clic en <strong>Nueva Implementación -> Aplicación Web</strong>.</li>
+                                        <li>Configura los accesos (Ejecutar como: <em>Yo</em>, Quién tiene acceso: <em>Cualquier persona</em>) e impleméntalo.</li>
+                                        <li>Copia la URL provista, desactiva el <strong>Modo Simulador</strong> arriba, pégala aquí y guarda.</li>
+                                    </ol>
+                                    <p class="warning-text-note">
+                                        <i data-lucide="shield-alert"></i>
+                                        <span>Tus credenciales de Google nunca se exponen, la conexión se realiza de forma directa y segura desde tu navegador a tu script personal.</span>
+                                    </p>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </div>
+            </section>
+
+        </main>
+        
+        <!-- FOOTER -->
+        <footer class="app-footer">
+            <p>&copy; 2026 Congreso Científico. Desarrollado de forma premium para control de asistencia física.</p>
+        </footer>
+
+    </div>
+
+    <!-- Carga del archivo principal de lógica -->
+    <script src="app.js?v=3"></script>
+</body>
+</html>
