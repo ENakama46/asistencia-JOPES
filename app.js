@@ -492,10 +492,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Registrar asistencia automáticamente
         registerAttendance(name, affiliation, 'QR');
 
-        // Mantener la cámara activa 2.5s para que se vea la animación de escaneo
+        // Mantener la cámara activa 2.0s para que se vea la animación de escaneo
         setTimeout(() => {
             stopCamera();
-        }, 2500);
+        }, 2000);
     }
 
     function onQrCodeError(errorMessage) {
