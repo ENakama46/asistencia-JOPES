@@ -491,7 +491,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Registrar asistencia automáticamente
         registerAttendance(name, affiliation, 'QR');
-stopCamera();
+
+        // Mantener la cámara activa 2.5s para que se vea la animación de escaneo
+        setTimeout(() => {
+            stopCamera();
+        }, 2500);
     }
 
     function onQrCodeError(errorMessage) {
@@ -527,54 +531,15 @@ stopCamera();
             return;
         }
 
-        // Si NO estamos en modo simulador, intentar sincronización remota
+        // Guardar siempre localmente primero (instantáneo, sin esperar red)
         appState.history.unshift(record);
         saveHistoryToLocalStorage();
         renderHistory();
         updateRecentScanSidebar(record);
-        
-        if (appState.isOffline || !appState.sheetsUrl) {
-            // Queda pendiente localmente
-            showInstantFeedback("Registrado (Offline)", `${name} (Guardado en dispositivo)`, true, affiliation);
-            playSuccessSound(); // Bip satisfactorio pues el dato quedó seguro localmente
-            updateOfflineBadge();
-            return;
-        }
+        updateOfflineBadge();
 
-        // Intentar registrar en Google Sheets por fetch (POST)
-        try {
-            // Mostrar animación de red pendiente en el sidebar
-            updateRecentScanSidebarStatus(record.id, 'enviando');
-
-            const response = await fetch(appState.sheetsUrl, {
-                method: 'POST',
-                mode: 'no-cors', // Apps Script requiere no-cors o responde redirect
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    nombre: name,
-                    afiliacion: affiliation,
-                    metodo: method,
-                    timestamp: timestamp
-                })
-            });
-
-            // Al usar no-cors, la respuesta es opaca. Si la petición no arroja error, asumimos éxito.
-            // Para asegurar, validamos que la petición se completó sin problemas de red.
-            record.syncStatus = 'success';
-            updateRecordStatus(record.id, 'success');
-            showInstantFeedback("¡Registro Registrado en Sheets!", name, true, affiliation);
-            playSuccessSound();
-            
-        } catch (error) {
-            console.error("Error sincronizando registro con Google Sheets:", error);
-            // El registro se queda como pendiente offline para ser reintentado después
-            record.syncStatus = 'pending';
-            updateRecordStatus(record.id, 'pending');
-            showInstantFeedback("Registrado Localmente", `${name} (Fallo red Sheets, reintentando...)`, true, affiliation);
-            playSuccessSound(); // Se reproduce de éxito local
-        }
+        showInstantFeedback("¡Registrado!", `${name} — Guardado localmente`, true, affiliation);
+        playSuccessSound();
     }
 
     // Formulario Registro Manual
