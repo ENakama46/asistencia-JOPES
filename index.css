@@ -60,6 +60,23 @@
     padding: 0;
 }
 
+/* Escalado dinámico proporcional para móviles (Ajusta todos los tamaños en 'rem' automáticamente) */
+html {
+    font-size: 16px;
+}
+
+@media (max-width: 768px) {
+    html {
+        font-size: 14px; /* Reduce 12.5% el tamaño global en móviles promedio */
+    }
+}
+
+@media (max-width: 400px) {
+    html {
+        font-size: 12px; /* Reduce 25% el tamaño global en móviles pequeños */
+    }
+}
+
 body {
     background-color: var(--bg-base);
     color: var(--text-primary);
