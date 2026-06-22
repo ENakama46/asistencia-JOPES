@@ -3,72 +3,437 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generador de QR - AsistenciQR</title>
+    <title>Generador de QR Premium - AsistenciQR</title>
+    <!-- Google Fonts: Outfit -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- HTML5 QR Code Library (Canvas Version) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.1/qrcode.min.js"></script>
     <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, hsl(220, 40%, 8%), hsl(220, 35%, 15%));
+            --panel-bg: rgba(30, 41, 59, 0.45);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --primary: #0ea5e9;
+            --primary-hover: #0284c7;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --card-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
             font-family: 'Outfit', sans-serif;
-            background: linear-gradient(135deg, hsl(210,30%,10%), hsl(210,30%,20%));
-            color: #e2e8f0;
+            background: var(--bg-gradient);
+            color: var(--text-main);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
-            margin: 0;
+            padding: 1.5rem;
+            overflow-x: hidden;
         }
+
+        /* Ambient Glow Effects */
+        .glow {
+            position: absolute;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(14, 165, 233, 0.15) 0%, rgba(0,0,0,0) 70%);
+            z-index: -1;
+            filter: blur(40px);
+            pointer-events: none;
+        }
+        .glow-1 { top: 10%; left: 10%; }
+        .glow-2 { bottom: 10%; right: 10%; }
+
         .container {
-            background: rgba(255,255,255,0.08);
-            backdrop-filter: blur(12px);
-            border-radius: 16px;
-            padding: 2rem;
-            max-width: 400px;
+            background: var(--panel-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--panel-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            max-width: 480px;
             width: 100%;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            box-shadow: var(--card-shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            animation: fadeIn 0.6s ease-out;
         }
-        h1 { text-align:center; margin-bottom:1rem; }
-        input, button {
-            width:100%;
-            padding:0.8rem 1rem;
-            margin-top:0.5rem;
-            border:none;
-            border-radius:8px;
-            font-size:1rem;
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
-        input { background:rgba(255,255,255,0.12); color:#fff; }
-        button { background:#0ea5e9; color:#fff; cursor:pointer; transition:background 0.2s; }
-        button:hover { background:#0284c7; }
-        #qrCode { margin-top:1.5rem; display:flex; justify-content:center; }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo-preview-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .logo-badge {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .logo-badge img {
+            height: 18px;
+            opacity: 0.9;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: -0.025em;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, var(--text-muted));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        p.subtitle {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
+            pointer-events: none;
+            width: 18px;
+            height: 18px;
+        }
+
+        input {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--panel-border);
+            border-radius: 12px;
+            padding: 0.8rem 1rem 0.8rem 2.8rem;
+            color: #fff;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.25s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .qr-output-container {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            display: none; /* Hidden until generated */
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        .qr-frame {
+            background: #ffffff;
+            padding: 1.25rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            margin-bottom: 1.5rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+            max-width: 100%;
+        }
+
+        .nav-back {
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .nav-back:hover {
+            color: var(--text-main);
+        }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
+    <div class="glow glow-1"></div>
+    <div class="glow glow-2"></div>
+
     <div class="container">
-        <h1>Generador de QR</h1>
-        <p>Introduce los datos que deseas codificar (p. ej., nombre y afiliación).</p>
-        <input type="text" id="qrData" placeholder="Datos del asistente"/>
-        <button id="generateBtn">Generar QR</button>
-        <div id="qrCode"></div>
+        <div class="header">
+            <div class="logo-preview-container">
+                <div class="logo-badge">
+                    <img src="logo.png" alt="JOPES Logo" onerror="this.style.display='none'">
+                    <span>Logo JOPES Activo</span>
+                </div>
+            </div>
+            <h1>Generador de QR JOPES</h1>
+            <p class="subtitle">Genera credenciales QR con el logotipo de JOPES integrado en el centro para control de asistencia.</p>
+        </div>
+
+        <div class="form-group">
+            <label for="name">Nombre Completo</label>
+            <div class="input-wrapper">
+                <i data-lucide="user"></i>
+                <input type="text" id="name" placeholder="Ej. Juan Pérez López" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="affiliation">Afiliación / Institución</label>
+            <div class="input-wrapper">
+                <i data-lucide="building"></i>
+                <input type="text" id="affiliation" placeholder="Ej. Universidad Nacional" autocomplete="off">
+            </div>
+        </div>
+
+        <div class="actions">
+            <button id="generateBtn" class="btn-primary">
+                <i data-lucide="qr-code"></i>
+                Generar Código QR
+            </button>
+        </div>
+
+        <div class="qr-output-container" id="qrOutput">
+            <div class="qr-frame">
+                <canvas id="qrCanvas"></canvas>
+            </div>
+            <button id="downloadBtn" class="btn-secondary">
+                <i data-lucide="download"></i>
+                Descargar Código QR
+            </button>
+        </div>
+
+        <a href="index.html" class="nav-back">
+            <i data-lucide="arrow-left" style="width:16px;height:16px;"></i>
+            Volver a la Aplicación Principal
+        </a>
     </div>
+
     <script>
-        const btn = document.getElementById('generateBtn');
-        const qrDiv = document.getElementById('qrCode');
-        btn.addEventListener('click', () => {
-            const data = document.getElementById('qrData').value.trim();
-            if (!data) {
-                alert('Introduce algún texto para generar el QR.');
+        // Inicializar iconos de Lucide
+        lucide.createIcons();
+
+        const generateBtn = document.getElementById('generateBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const qrOutput = document.getElementById('qrOutput');
+        const qrCanvas = document.getElementById('qrCanvas');
+        const nameInput = document.getElementById('name');
+        const affiliationInput = document.getElementById('affiliation');
+
+        generateBtn.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            const affiliation = affiliationInput.value.trim();
+
+            if (!name) {
+                alert('Por favor, introduce al menos el nombre del asistente.');
                 return;
             }
-            qrDiv.innerHTML = '';
-            new QRCode(qrDiv, {
-                text: data,
-                width: 256,
-                height: 256,
-                colorDark: '#ffffff',
-                colorLight: '#00000000',
-                correctLevel: QRCode.CorrectLevel.H
+
+            // El formato esperado por el lector de asistencia es: "Nombre|Afiliacion"
+            const qrText = affiliation ? `${name}|${affiliation}` : name;
+
+            // Mostrar el contenedor de salida
+            qrOutput.style.display = 'flex';
+
+            // Configurar canvas para la generación del QR
+            const size = 300;
+            qrCanvas.width = size;
+            qrCanvas.height = size;
+
+            // Generar el código QR con el nivel de corrección Alto (H)
+            QRCode.toCanvas(qrCanvas, qrText, {
+                width: size,
+                margin: 2,
+                color: {
+                    dark: '#0f172a',  // Azul pizarra oscuro
+                    light: '#ffffff'  // Fondo blanco puro para contraste
+                },
+                errorCorrectionLevel: 'H'
+            }, function (error) {
+                if (error) {
+                    console.error(error);
+                    alert('Error al generar el código QR.');
+                    return;
+                }
+
+                // Cargar e integrar el logo en el centro
+                const logo = new Image();
+                logo.src = 'logo.png';
+                logo.onload = function() {
+                    const ctx = qrCanvas.getContext('2d');
+                    
+                    // Ajustar tamaño del logotipo (aprox 30% del ancho del QR)
+                    const logoWidth = 90; 
+                    const logoHeight = logoWidth * (logo.height / logo.width);
+
+                    // Coordenadas del centro del canvas
+                    const x = (size - logoWidth) / 2;
+                    const y = (size - logoHeight) / 2;
+
+                    // Dibujar un fondo blanco redondeado detrás del logo para limpiar módulos del QR
+                    const padding = 6;
+                    ctx.fillStyle = '#ffffff';
+                    
+                    drawRoundedRect(
+                        ctx,
+                        x - padding,
+                        y - padding,
+                        logoWidth + (padding * 2),
+                        logoHeight + (padding * 2),
+                        8
+                    );
+                    ctx.fill();
+
+                    // Dibujar borde sutil grisáceo alrededor del fondo blanco
+                    ctx.strokeStyle = '#e2e8f0';
+                    ctx.lineWidth = 1.5;
+                    ctx.stroke();
+
+                    // Dibujar el logo
+                    ctx.drawImage(logo, x, y, logoWidth, logoHeight);
+                };
+
+                logo.onerror = function() {
+                    console.warn('No se pudo cargar la imagen logo.png. El QR se generará sin logotipo en el centro.');
+                };
             });
         });
+
+        // Evento para descargar la imagen
+        downloadBtn.addEventListener('click', () => {
+            const name = nameInput.value.trim();
+            const filename = `QR_${name.replace(/[^a-zA-Z0-9]/g, '_')}.png`;
+            
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = qrCanvas.toDataURL('image/png');
+            link.click();
+        });
+
+        // Función auxiliar para dibujar rectángulos redondeados en Canvas
+        function drawRoundedRect(ctx, x, y, width, height, radius) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+        }
     </script>
 </body>
 </html>
